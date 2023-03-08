@@ -43,30 +43,35 @@ public class App
         }
 driver.get("https://www.stockmarketgame.org/enterstock.htm");
 System.out.println("Connection to Base made");
-System.out.println("Enter Stock");
-Scanner reader = new Scanner(System.in);
-String stockpick = reader.nextLine();
-Stock picked = new Stock(stockpick);
-System.out.println("Ticker: "+picked.tickers+"\nPrice: "+picked.price);
-System.out.println("Want to buy(b) or sell(s)?");
-String buyOrSell = reader.nextLine();
-if (buyOrSell.toLowerCase().equals("b")) {
-    System.out.println("How many shares");
-    Scanner numread = new Scanner(System.in);
-    int sharess = numread.nextInt();
-    if (sharess >= 10) {
-        picked.buy(sharess,driver);
-
-    } else {
-     System.out.println("needs at least 10 shares");   
-    }
-} 
-else if(buyOrSell.toLowerCase().equals("s")) {
+int x=0;
+while (x==0) {
+    System.out.println("Enter Stock");
+    Scanner reader = new Scanner(System.in);
+    String stockpick = reader.nextLine();
+    Stock picked = new Stock(stockpick);
+    System.out.println("Ticker: "+picked.tickers+"\nPrice: "+picked.price);
+    System.out.println("Market Cap: "+picked.marketcap);
+    System.out.println("Want to buy(b) or sell(s)?");
+    String buyOrSell = reader.nextLine();
+    if (buyOrSell.toLowerCase().equals("b")) {
+        System.out.println("How many shares");
+        Scanner numread = new Scanner(System.in);
+        int sharess = numread.nextInt();
+        if (sharess >= 10) {
+            picked.buy(sharess,driver);
     
-}
-Stock[] buyable = new Stock[4];
-stockinits(buyable);
+        } else {
+         System.out.println("needs at least 10 shares");   
+        }
+    } 
+    else if(buyOrSell.toLowerCase().equals("s")) {
+        
     }
+    Stock[] buyable = new Stock[4];
+    stockinits(buyable);
+        }
+        
+}
 
     private static void stockinits(Stock[] buyable) {
         buyable[0] = new Stock("MSFT");
