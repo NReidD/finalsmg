@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,6 +15,8 @@ import org.openqa.selenium.WebElement;
 public class Stock {
     String tickers = "";
     double price = 0;
+    int marketcap = 0;
+    
     public Stock(String ticker){
         tickers = ticker;
         price = priceinit(ticker);
@@ -32,9 +35,12 @@ try {
     response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
     String jsonString =response.body();  
     JSONObject obj = new JSONObject(jsonString);
+    System.out.println(jsonString);
 JSONArray pageName = obj.getJSONObject("quoteSummary").getJSONArray("result");
 for (int i = 0; i < pageName.length(); i++) {
-    JSONObject post_id = pageName.getJSONObject(i).getJSONObject("price").getJSONObject("regularMarketPrice");
+    JSONObject post_id = pageName.getJSONObject(i).getJSONObject("price").getJSONObject("marketCap");
+    JSONObject post_id2 = pageName.getJSONObject(i).getJSONObject("price").getJSONObject("regularMarketPrice");
+    marketcap = post_id2.getInt("raw");
     price = post_id.getDouble("raw");
     return price;
 }
