@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,10 +18,47 @@ public class Stock {
     String tickers = "";
     double price = 0;
     int marketcap = 0;
+    int shares = 0;
+    double average;
     
     public Stock(String ticker){
         tickers = ticker;
         price = priceinit(ticker);
+        average = average(ticker);
+    }
+    private double average(String ticker2){
+return getSMA(ticker2,"weekly");
+        
+    }
+    private double getSMA(String ticker2, String string) {
+        HttpRequest request = HttpRequest.newBuilder()
+		.uri(URI.create("https://alpha-vantage.p.rapidapi.com/query?time_period=60&interval="+string+"&series_type=close&function="+"SMA"+"&symbol="+ticker2+"&datatype=json"))
+		.header("X-RapidAPI-Key", "3ee02d7a37msha72732d998c4464p1ff34bjsn5959dec5c451")
+		.header("X-RapidAPI-Host", "alpha-vantage.p.rapidapi.com")
+		.method("GET", HttpRequest.BodyPublishers.noBody())
+		.build();
+HttpResponse<String> response;
+try {
+    response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+    System.out.println(response.body());
+    String re = response.body();
+    JSONObject jsonObject = new JSONObject(re);
+    Iterator<String> keys = jsonObject.keys();
+String key = keys.next();
+System.out.println(key);
+
+    JSONObject jArray= jsonObject.getJSONObject(key);
+    JSONObject post_id = jArray.getJSONObject();
+    average = post_id.getInt("SMA");
+    System.out.println(average);
+
+
+
+} catch (IOException | InterruptedException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+return average;
     }
     private double priceinit(String ticker2) {
         System.out.println("Running");
@@ -79,6 +117,7 @@ return price;
                     WebElement submit2 = driver.findElement(By.xpath("/html/body/div/div[1]/section/section/div/div[2]/div[2]/div[14]/div[2]/input[1]"));
                 submit2.click();
                 System.out.println("Executed.");
+                this.shares = shares;
 
                 }
 
@@ -106,7 +145,7 @@ return price;
                 submit2.click();
                 }
                 System.out.println("Executed.");
-
+                this.shares = this.shares-shares;
     }
     }
 
