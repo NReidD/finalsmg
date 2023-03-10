@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.Driver;
 import java.sql.Time;
 import java.util.List;
 import java.util.Scanner;
@@ -24,9 +25,9 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 public class App 
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws InterruptedException
     {ChromeOptions option = new ChromeOptions();
-        option.addArguments("--headless");
+       // option.addArguments("--headless");
         System.setProperty("webdriver.chrome.driver","./resources/chromedriver/chromedriver.exe");
         WebDriver driver = new ChromeDriver(option);
         driver.get("https://www.stockmarketgame.org/login.html");
@@ -42,37 +43,50 @@ public class App
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-driver.get("https://www.stockmarketgame.org/enterstock.htm");
-System.out.println("Connection to Base made");
-int x=0;
-while (x==0) {
-    System.out.println("Enter Stock");
-    Scanner reader = new Scanner(System.in);
-    String stockpick = reader.nextLine();
-    Stock picked = new Stock(stockpick);
-    System.out.println("Ticker: "+picked.tickers+"\nPrice: "+picked.price);
-    System.out.println("Market Cap: "+picked.marketcap);
-    System.out.println("Want to buy(b) or sell(s)?");
-    String buyOrSell = reader.nextLine();
-    if (buyOrSell.toLowerCase().equals("b")) {
-        System.out.println("How many shares");
-        Scanner numread = new Scanner(System.in);
-        int sharess = numread.nextInt();
-        if (sharess >= 10) {
-            picked.buy(sharess,driver);
-    
-        } else {
-         System.out.println("needs at least 10 shares");   
+        int x=0;
+        while (x==0) {
+            driver.get("https://www.stockmarketgame.org/enterstock.htm");
+            Stock[] buyableStocks = new Stock[4];
+                    stockinits(buyableStocks);
+                    for (Stock stock : buyableStocks) {
+                        System.out.println("running");
+                        if (profitable(stock)) {
+                            stock.buy(100, driver);
+                        }
+                        if (profited(stock)) {
+                            stock.sell(stock.shares, driver);
+                        }
+                    }
+        try {
+            Thread.sleep(90000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }            
         }
-    } 
-    else if(buyOrSell.toLowerCase().equals("s")) {
-        
-    }
-    Stock[] buyable = new Stock[4];
-    stockinits(buyable);
-        }
-        
+
 }
+
+    private static boolean profited(Stock stock) {
+        if (stock.shares > 0) {
+            double boughtAt = stock.price;
+            Stock nowprice = new Stock(stock.tickers);
+            double nowpriced = nowprice.price;
+            if (boughtAt-nowpriced > 5) {
+                return true;
+
+            }
+        }
+        return false;
+    }
+
+    private static boolean profitable(Stock stock) {
+        System.out.println(stock.price+"Avg:"+stock.average);
+        if (stock.price < stock.average) {
+            return true;
+        }
+        return false;
+    }
 
     private static void stockinits(Stock[] buyable) {
         buyable[0] = new Stock("MSFT");

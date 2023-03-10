@@ -9,6 +9,13 @@
             "name": "App",
             "request": "launch",
             "mainClass": "smgg.App",
+            "projectName": "finalsmg_1118eda5"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "smgg.App",
             "projectName": "finalsmg_7bdf4616"
         },
         {
